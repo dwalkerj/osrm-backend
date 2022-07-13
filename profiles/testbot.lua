@@ -47,6 +47,12 @@ function process_node (profile, node, result)
 end
 
 function process_way (profile, way, result)
+  --debug.getinfo(way:id())
+  --local id_test = way:getid()
+  --io.write("id: ", id_test, "\n")
+  --local id_test = way.id --result is nil
+  --local id_test = way.osm_id --result is nil
+  --local id_test = way.id() --result is nil value (field 'id')
   local highway = way:get_value_by_key("highway")
   local toll = way:get_value_by_key("toll")
   local name = way:get_value_by_key("name")

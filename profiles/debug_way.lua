@@ -34,11 +34,15 @@ for i, p in pairs(handler.root.osm.way.tag) do
   way[p._attr.k] = p._attr.v
 end
 
+--attempt to access way id:
+local wayID = {handler.root.osm.way._attr.id}
+--pprint(wayID)
+
 -- call the way function
 local result = {}
-Debug.process_way(way,result)
+Debug.process_way(parser,result)
 
 -- print input and output
-pprint(way)
+pprint(parser)
 print("=>")
 pprint(result)
