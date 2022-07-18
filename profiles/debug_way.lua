@@ -36,13 +36,14 @@ end
 
 --attempt to access way id:
 local wayID = {handler.root.osm.way._attr.id}
+way['id'] = wayID[1]
 --pprint(wayID)
 
 -- call the way function
 local result = {}
-Debug.process_way(parser,result)
+Debug.process_way(way,result)
 
 -- print input and output
-pprint(parser)
+pprint(way)
 print("=>")
 pprint(result)
