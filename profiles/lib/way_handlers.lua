@@ -672,6 +672,48 @@ function WayHandlers.blocked_ways(profile,way,result,data)
   end
 end
 
+function WayHandlers.scale_supply_routes(profile,way,result,data)
+  --local wayID = way:id() -- nil method
+  --way:get_value_by_key("id") -- nil
+  --way.id -- nil
+  --way.id() -- nil field
+  --local wayID = way:id()
+  --io.write("id:" .. way:id())
+  local wayID = way:get_value_by_key('id')
+  local exData = "UNSOS_GroundSupplyRoutes_OSMIDs.csv"
+
+   -- if profile.properties.weight_name == 'routability' then
+   -- if result.forward_speed > 0 then
+     -- result.forward_rate = (result.forward_speed * forward_penalty) / 3.6
+    --end
+    --if result.backward_speed > 0 then
+    --  result.backward_rate = (result.backward_speed * backward_penalty) / 3.6
+    --end
+    --if result.duration > 0 then
+    --  result.weight = result.duration / forward_penalty
+    --end
+  --end
+
+  for route in io.lines(exData) do
+  -- picks up the index where route matches the given wayID
+    local i, j = string.find(route, tostring(wayID))
+    --if the index is not null then it prints the route ID
+    if i and j ~= nil then
+        if result.forward_speed > 0 then
+          result.forward_rate = (result.forward_speed * 5) / 3.6
+        end
+        if result.backward_speed > 0 then
+          result.backward_rate = (result.backward_speed * 5) / 3.6
+        end
+      --result.forward_rate = .1 and result.backward_rate = .1 
+      --print(route)
+    --else 
+      --result.forward_rate = 1 and result.backward_rate = 1
+      --print('false') 
+    end
+  end
+end
+
 function WayHandlers.driving_side(profile, way, result, data)
    local driving_side = way:get_value_by_key('driving_side')
    if driving_side == nil then

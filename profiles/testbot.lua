@@ -131,6 +131,23 @@ function process_way (profile, way, result)
   if junction == 'roundabout' then
     result.roundabout = true
   end
+
+  local wayID = way:get_value_by_key('id')
+  local exData = "UNSOS_GroundSupplyRoutes_OSMIDs.csv"
+
+  for route in io.lines(exData) do
+  -- picks up the index where route matches the given wayID
+    local i, j = string.find(route, tostring(wayID))
+    --if the index is not null then it prints the route ID
+    if i and j ~= nil then
+      result.forward_rate = .1 and result.backward_rate = .1 
+      print(route)
+    else 
+      result.forward_rate = 1 and result.backward_rate = 1
+      print('false') 
+    end
+  end
+
 end
 
 function process_turn (profile, turn)

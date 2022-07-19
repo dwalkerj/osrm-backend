@@ -11,6 +11,11 @@ limit = require("lib/maxspeed").limit
 Utils = require("lib/utils")
 Measure = require("lib/measure")
 
+-- Here you can include access to a postgres database
+--lua_sql = require "luasql.postgres"
+--sql_env = assert( lua_sql.postgres() )
+--sql_con = assert( sql_env:connect("imposm", "user", "password") )
+
 function setup()
   return {
     properties = {
@@ -28,6 +33,10 @@ function setup()
       left_hand_driving              = false,
       traffic_light_penalty          = 2,
     },
+
+
+    -- pull in CSV file of way IDs
+    -- supplyRoutes = io.open("UNSOS_GroundSupplyRoutes_OSMIDs.csv"),
 
     default_mode              = mode.driving,
     default_speed             = 10,
@@ -321,6 +330,48 @@ function setup()
   }
 end
 
+function scale_supply_routes(profile,way,result,data)
+  --local wayID = way:id() -- nil method
+  --way:get_value_by_key("id") -- nil
+  --way.id -- nil
+  --way.id() -- nil field
+  --local wayID = way:id()
+  --io.write("id:" .. way:id())
+  local wayID = way:get_value_by_key('id')
+  local exData = "UNSOS_GroundSupplyRoutes_OSMIDs.csv"
+
+   -- if profile.properties.weight_name == 'routability' then
+   -- if result.forward_speed > 0 then
+     -- result.forward_rate = (result.forward_speed * forward_penalty) / 3.6
+    --end
+    --if result.backward_speed > 0 then
+    --  result.backward_rate = (result.backward_speed * backward_penalty) / 3.6
+    --end
+    --if result.duration > 0 then
+    --  result.weight = result.duration / forward_penalty
+    --end
+  --end
+
+  for route in io.lines(exData) do
+  -- picks up the index where route matches the given wayID
+    local i, j = string.find(route, tostring(wayID))
+    --if the index is not null then it prints the route ID
+    if i and j ~= nil then
+        if result.forward_speed > 0 then
+          result.forward_rate = (result.forward_speed * 5) / 3.6
+        end
+        if result.backward_speed > 0 then
+          result.backward_rate = (result.backward_speed * 5) / 3.6
+        end
+      --result.forward_rate = .1 and result.backward_rate = .1 
+      --print(route)
+    --else 
+      --result.forward_rate = 1 and result.backward_rate = 1
+      --print('false') 
+    end
+  end
+end
+
 function process_node(profile, node, result, relations)
   -- parse access and barrier tags
   local access = find_access_tag(node, profile.access_tags_hierarchy)
@@ -455,7 +506,10 @@ function process_way(profile, way, result, relations)
     WayHandlers.weights,
 
     -- set classification of ways relevant for turns
-    WayHandlers.way_classification_for_turn
+    WayHandlers.way_classification_for_turn,
+
+    -- function to check whether way ID matches list of UN supply chains
+    WayHandlers.scale_supply_routes
   }
 
   WayHandlers.run(profile, way, result, data, handlers, relations)

@@ -40,10 +40,13 @@ way['id'] = wayID[1]
 --pprint(wayID)
 
 -- call the way function
-local result = {}
-Debug.process_way(way,result)
+local resultA = {}
+local resultB = {}
+Debug.process_way(way,resultA)
+--Debug.scale_supply_route(way,resultB)
 
 -- print input and output
 pprint(way)
 print("=>")
-pprint(result)
+pprint(resultA)
+--pprint(resultB)
