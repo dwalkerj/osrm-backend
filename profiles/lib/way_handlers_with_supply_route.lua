@@ -692,7 +692,6 @@ function WayHandlers.scale_supply_routes(profile,way,result,data)
       end
     end
   end
-
   -- return false if rate is unchanged after the for loop
   if result.forward_rate == (result.forward_speed / 3.6) and result.backward_rate == (result.backward_speed / 3.6) then
     return false
