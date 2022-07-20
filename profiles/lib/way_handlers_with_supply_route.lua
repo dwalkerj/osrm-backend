@@ -674,9 +674,9 @@ end
 
 function WayHandlers.scale_supply_routes(profile,way,result,data)
   -- for testing purposes:
-  local wayID = way:get_value_by_key('id')
+  --local wayID = way:get_value_by_key('id')
   -- for osrm-extract purposes:
-  --local wayID = way:id()
+  local wayID = way:id()
   local UNData = "UNSOS_GroundSupplyRoutes_OSMIDs.csv"
 
   for route in io.lines(UNData) do
