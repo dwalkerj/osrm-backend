@@ -672,6 +672,33 @@ function WayHandlers.blocked_ways(profile,way,result,data)
   end
 end
 
+function WayHandlers.scale_supply_routes(profile,way,result,data)
+  -- for testing purposes:
+  local wayID = way:get_value_by_key('id')
+  -- for osrm-extract purposes:
+  --local wayID = way:id()
+  local UNData = "UNSOS_GroundSupplyRoutes_OSMIDs.csv"
+
+  for route in io.lines(UNData) do
+  -- picks up the index where route matches the given wayID
+    local i, j = string.find(route, tostring(wayID))
+    --if the index is not null then it prints the route ID
+    if i and j ~= nil then
+      if result.forward_speed > 0 then
+        result.forward_rate = (result.forward_speed * 5) / 3.6
+      end
+      if result.backward_speed > 0 then
+        result.backward_rate = (result.backward_speed * 5) / 3.6
+      end
+    end
+  end
+
+  -- return false if rate is unchanged after the for loop
+  if result.forward_rate == (result.forward_speed / 3.6) and result.backward_rate == (result.backward_speed / 3.6) then
+    return false
+  end
+end
+
 function WayHandlers.driving_side(profile, way, result, data)
    local driving_side = way:get_value_by_key('driving_side')
    if driving_side == nil then

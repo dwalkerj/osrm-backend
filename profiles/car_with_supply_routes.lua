@@ -4,14 +4,25 @@ api_version = 4
 
 Set = require('lib/set')
 Sequence = require('lib/sequence')
-Handlers = require("lib/way_handlers")
+-- incorporate custom handler
+Handlers = require("lib/way_handlers_with_supply_route")
 Relations = require("lib/relations")
 find_access_tag = require("lib/access").find_access_tag
 limit = require("lib/maxspeed").limit
 Utils = require("lib/utils")
 Measure = require("lib/measure")
 
+--Here you can include access to a postgres database
+--lua_sql = require "luasql.postgres"
+
+-- pull in CSV file of way IDs
+supplyRoutes = io.open("UNSOS_GroundSupplyRoutes_OSMIDs.csv")
+
 function setup()
+--possible setup for postgres database
+--sql_env = assert( lua_sql.postgres() )
+--sql_con = assert( sql_env:connect("imposm", "user", "password") )
+  
   return {
     properties = {
       max_speed_for_map_matching      = 180/3.6, -- 180kmph -> m/s
@@ -163,6 +174,11 @@ function setup()
       driveway          = 0.5,
       ["drive-through"] = 0.5,
       ["drive-thru"] = 0.5
+    },
+
+    supply_route_bonus = {
+      sr_bonus_strong = 5,
+      sr_bonus_weak = 10
     },
 
     restricted_highway_whitelist = Set {
@@ -455,7 +471,10 @@ function process_way(profile, way, result, relations)
     WayHandlers.weights,
 
     -- set classification of ways relevant for turns
-    WayHandlers.way_classification_for_turn
+    WayHandlers.way_classification_for_turn,
+
+    -- function to check whether way ID matches list of UN supply chains
+    --WayHandlers.scale_supply_routes
   }
 
   WayHandlers.run(profile, way, result, data, handlers, relations)
